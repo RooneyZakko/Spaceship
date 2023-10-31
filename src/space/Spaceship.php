@@ -66,8 +66,8 @@ class Spaceship
         return $this->isAlive;
     }
 
-    public function upgradeWeapon(int $damageIncrease) {
-
+    public function upgradeWeapon(int $damageIncrease)
+    {
         $this->damage += $damageIncrease;
     }
 }

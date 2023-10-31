@@ -1,8 +1,6 @@
 <?php
 namespace space;
 
-require_once 'Spaceship.php';
-
 class Fighter extends Spaceship
 {
     public int $ammo;
@@ -13,8 +11,10 @@ class Fighter extends Spaceship
         $this->ammo = $ammo;
     }
 
-    public function shoot(int $shots = 5, int $damage = 2): int
+    public function shoot(int $shots = 5): int
     {
+        $damage = parent::shoot();
+
         if ($this->ammo - $shots >= 0) {
             $this->ammo -= $shots;
             return $shots * $damage;
@@ -23,4 +23,3 @@ class Fighter extends Spaceship
         }
     }
 }
-?>
