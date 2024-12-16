@@ -11,6 +11,7 @@ class Fighter extends Spaceship
         $this->ammo = $ammo;
     }
 
+    // Voer een schot uit en bereken de totale schade
     public function shoot(int $shots = 5): int
     {
         $damage = parent::shoot();
@@ -22,4 +23,5 @@ class Fighter extends Spaceship
             return 0;
         }
     }
+    
 }

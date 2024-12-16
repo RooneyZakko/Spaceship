@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 include_once 'space/Spaceship.php';
 include_once 'space/Fighter.php';
 include_once 'space/Cargoship.php';
@@ -25,7 +27,7 @@ for ($i = 0; $i < $numberOfShips; $i++) {
     $ammo = rand(10, 100);
     $fuel = rand(10, 100);
     $hitPoints = rand(10, 100);
-
+    
     if ($randomShip === 1) {
         $fleet[$i] = new space\Fighter($fuel, $hitPoints, $ammo);
     } else {
@@ -34,7 +36,18 @@ for ($i = 0; $i < $numberOfShips; $i++) {
     }
 }
 
-$enemyShip = new space\Spaceship(100, 150, 100);
+// Sla één schip op in de sessie
+$fleet[0]->save('ship_1');
+
+// Laad het opgeslagen schip uit de sessie
+$savedShip = space\Spaceship::load('ship_1');
+if ($savedShip) {
+    echo "Loaded ship has " . $savedShip->getAmmo() . " ammo.<br>";
+    echo "Loaded ship has " . $savedShip->getFuel() . " fuel.<br>";
+    echo "Loaded ship has " . $savedShip->getHitPoints() . " HP.<br><br>";
+} else {
+    echo "Failed to load ship.<br>";
+}
 
 // Maak vloten en voeg schepen toe aan de vloten
 $myFleet = new space\Fleet();
@@ -56,7 +69,6 @@ for ($i = 0; $i < $numberOfShips; $i++) {
     if ($ship instanceof space\Fighter) {
         $damage = $ship->shoot();
         echo "Fighter " . ($i + 1) . " shoots and does " . $damage . " damage.<br>";
-        $enemyShip->hit($damage);
     } elseif ($ship instanceof space\Cargoship) {
         $cargo = rand(10, 100);
         $ship->loadCargo($cargo);
@@ -66,8 +78,6 @@ for ($i = 0; $i < $numberOfShips; $i++) {
     $status = $ship->isAlive() ? "Alive" : "Destroyed";
     echo "Ship " . ($i + 1) . " is " . $status . "<br><br>";
 }
-
-echo "The enemy ship has " . $enemyShip->getHitPoints() . " HP left.<br>";
 
 // Doe nu een gevecht tussen de vloten
 $battleResult = $myFleet->battle($enemyFleet);
@@ -82,22 +92,23 @@ if ($totalDamageMyFleet + $totalDamageEnemyFleet > 0) {
     $ranking = 0; // Voorkom divisie door nul
 }
 
+// Stap 8: HTML-output voor gevechtsresultaat en ranking
 echo "Battle result: $battleResult<br>";
-echo "Ranking: " . round($ranking) . "%" . '<br>';
-
-echo " The end of the code has been reached.<br>";
+echo "Ranking: " . round($ranking) . "%<br>";
 ?>
 
 </p>
 
+<!-- Voeg een canvas-element toe voor de grafiek -->
 <canvas id="myChart" style="max-width: 400px; max-height: 400px"></canvas>
+
 <script>
-    // Voeg deze code toe onder het <canvas>-element
-    var shipTypes = ["My Fleet","My Fleet" ,"Enemy Fleet"];
+    //  JavaScript voor het maken van de grafiek met Chart.js
+    var shipTypes = ["Ship 1", "Ship 2", "Enemy Ship"];
     var shipCounts = [
         <?php echo $totalDamageMyFleet; ?>,
         <?php echo $totalDamageMyFleet; ?>,
-         <?php echo $totalDamageEnemyFleet; ?>
+        <?php echo $totalDamageEnemyFleet; ?>
     ];
 
     var ctx = document.getElementById("myChart").getContext("2d");
@@ -111,7 +122,7 @@ echo " The end of the code has been reached.<br>";
                     label: "Total Damage",
                     data: shipCounts,
                     backgroundColor: ["rgba(0, 0, 255, 0.2)", "rgba(255, 99, 132, 0.2)"],
-                    borderColor: ["rgba(0, 0, 255, 1", "rgba(255, 99, 132, 1)"],
+                    borderColor: ["rgba(0, 0, 255, 1)", "rgba(255, 99, 132, 1)"],
                     borderWidth: 1,
                 },
             ],
